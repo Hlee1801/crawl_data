@@ -33,7 +33,6 @@ public class Record {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "TEXT")
     private Source source;
     private String sourceId;
 

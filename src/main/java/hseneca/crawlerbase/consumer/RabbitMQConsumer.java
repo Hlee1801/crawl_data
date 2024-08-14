@@ -1,6 +1,8 @@
 package hseneca.crawlerbase.consumer;
 
 import hseneca.crawlerbase.service.CrawlNatureArticleService;
+import hseneca.crawlerbase.service.CrawlNatureCareersService;
+import hseneca.crawlerbase.service.CrawlNaturePodcastService;
 import hseneca.crawlerbase.service.CrawlNatureVideoService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +14,45 @@ import java.io.IOException;
 public class RabbitMQConsumer { 
 
     @Autowired
-    CrawlNatureArticleService crawlNatureArticleServiceService;
+    private CrawlNatureArticleService crawlNatureArticleService;
     @Autowired
     private CrawlNatureVideoService crawlNatureVideoService;
+    @Autowired
+    private CrawlNaturePodcastService crawlNaturePodcastService;
+    @Autowired
+    private CrawlNatureCareersService crawlNatureCareersService;
 
-//    @RabbitListener(queues = "nature-analysis")
-//    public void receiveMessage(String page) throws IOException {
-////        System.out.println();
-//        try {
-//            crawlNatureArticleServiceService.crawlNatureArticle(Integer.parseInt(page));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-
-    @RabbitListener(queues = "nature-analysis")
-    public void receiveMessage(String page) throws IOException {
-//        System.out.println();
+    @RabbitListener(queues = "research-articles")
+    public void receiveMessageForArticle(String page) throws IOException {
         try {
-            crawlNatureVideoService.crawlNatureArticle(Integer.parseInt(page));
+            crawlNatureArticleService.crawlNatureArticle(Integer.parseInt(page));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = "videos")
+    public void receiveMessageVideo(String page) throws IOException {
+        try {
+            crawlNatureVideoService.crawlNatureVideo(Integer.parseInt(page));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = "podcasts")
+    public void receiveMessagePodcast(String page) throws IOException {
+        try {
+            crawlNaturePodcastService.crawlNaturePodcast(Integer.parseInt(page));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = "careers")
+    public void receiveMessageCareer(String page) throws IOException {
+        try {
+            crawlNatureCareersService.crawlNatureCareers(Integer.parseInt(page));
         }catch (Exception e){
             e.printStackTrace();
         }

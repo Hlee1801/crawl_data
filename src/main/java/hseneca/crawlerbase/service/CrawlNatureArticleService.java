@@ -3,6 +3,7 @@ package hseneca.crawlerbase.service;
 
 import hseneca.crawlerbase.entity.Source;
 import hseneca.crawlerbase.repository.RecordRepository;
+import hseneca.crawlerbase.utils.DateTimeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,16 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hseneca.crawlerbase.utils.DateTimeUtils.convert;
 
 @Service
 public class CrawlNatureArticleService {
     @Autowired
-    RecordRepository recordRepository;
-    public static String DATE_FORMAT_INPUT = "dd MMM yyyy";
+    private RecordRepository recordRepository;
+
+    @Autowired
+    private DateTimeUtils dateTimeUtils;
 
 
     @Transactional
@@ -36,7 +40,6 @@ public class CrawlNatureArticleService {
 
             for (Element element : elements) {
 
-
                 String title = element.select(".c-card__title").text();
 
                 String desc = element.select(".c-card__summary").text();
@@ -47,7 +50,11 @@ public class CrawlNatureArticleService {
                     authorList.add(authorElement.text());
                 }
 
-                String publishDate = element.select("time.c-meta__item").text();
+                String publishDate = null;
+                Element timeElement = element.selectFirst("time.c-meta__item");
+                if (timeElement != null) {
+                    publishDate = timeElement.attr("datetime");  // Extract the datetime attribute
+                }
 
                 String link = null;
                 String sourceId = null;
@@ -65,7 +72,7 @@ public class CrawlNatureArticleService {
                     imageUrl = image.attr("src");
                 }
 
-                recordRepository.insertOrUpdate(String.join(",", authorList), desc , imageUrl, convert(publishDate), Source.NATURE.toString(), sourceId, title, url);
+                recordRepository.insertOrUpdate(String.join(",", authorList), desc , imageUrl, convert(publishDate), Source.NATURE, sourceId, title, url, ZonedDateTime.now(),ZonedDateTime.now());
 
 
 
@@ -95,8 +102,6 @@ public class CrawlNatureArticleService {
 //
 //                }
 
-
-
             }
 
 
@@ -105,11 +110,6 @@ public class CrawlNatureArticleService {
             throw e;
         }
 
-    }
-
-    public static LocalDate convert(String dateStr) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_INPUT);
-        return LocalDate.parse(dateStr, inputFormatter);
     }
 
 }
