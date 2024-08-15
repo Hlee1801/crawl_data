@@ -1,10 +1,8 @@
 package hseneca.crawlerbase.service;
 
 
-import hseneca.crawlerbase.entity.Record;
 import hseneca.crawlerbase.entity.Source;
 import hseneca.crawlerbase.repository.RecordRepository;
-import hseneca.crawlerbase.utils.DateTimeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static hseneca.crawlerbase.utils.DateTimeUtils.convert;
 
@@ -43,7 +39,8 @@ public class CrawlNatureVideoService {
 
                 String authors = element.select(".c-author-list").text();
 
-                System.out.println(authors);
+                Elements typeOfArticleElement = element.select("span[data-test=article.type]");
+                String typeOfArticle = typeOfArticleElement.text();
 
                 String publishDate = null;
                 Element timeElement = element.selectFirst("time.c-meta__item");
@@ -66,8 +63,7 @@ public class CrawlNatureVideoService {
                     imageUrl = image.attr("src");
                 }
 
-                recordRepository.insertOrUpdate(authors, desc , imageUrl, convert(publishDate), Source.NATURE, sourceId, title, url, ZonedDateTime.now(), ZonedDateTime.now());
-                System.out.printf("Updated record: %s, %s%n", Source.NATURE);
+                recordRepository.insertOrUpdate(authors, desc , imageUrl, convert(publishDate), Source.NATURE, sourceId, title, url, typeOfArticle, ZonedDateTime.now(), ZonedDateTime.now());
 
             }
 

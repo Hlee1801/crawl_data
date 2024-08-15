@@ -42,6 +42,9 @@ public class CrawlNaturePodcastService {
 
                     String desc = element.select(".c-card__summary").text();
 
+                    Elements typeOfArticleElement = element.select("span[data-test=article.type]");
+                    String typeOfArticle = typeOfArticleElement.text();
+
                     List<String> authorsList = new ArrayList<>();
                     Element authors = element.selectFirst(".c-author-list");
                     for(Element authorsElement :authors.children()){
@@ -71,7 +74,7 @@ public class CrawlNaturePodcastService {
                         imageUrl = image.attr("src");
                     }
 
-                recordRepository.insertOrUpdate(String.join(",",authorsList), desc , imageUrl, convert(publishDate), Source.NATURE, sourceId, title, url, ZonedDateTime.now(), ZonedDateTime.now());
+                recordRepository.insertOrUpdate(String.join(",",authorsList), desc , imageUrl, convert(publishDate), Source.NATURE, sourceId, title, url,typeOfArticle, ZonedDateTime.now(), ZonedDateTime.now());
                 }
 
             } catch (IOException e) {

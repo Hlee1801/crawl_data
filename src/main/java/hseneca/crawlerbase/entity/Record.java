@@ -22,18 +22,24 @@ public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
     @Column(columnDefinition = "TEXT")
     private String description;
     private String author;
+    private String articleType;
     private LocalDate publishDate;
+
     @Column(columnDefinition = "TEXT")
     private String url;
+
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     private Source source;
+
     private String sourceId;
 
     @CreationTimestamp
